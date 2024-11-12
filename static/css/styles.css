@@ -1,0 +1,72 @@
+/* Overall Page Styles */
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: #f0f4f8; /* Light blue background */
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+/* Container for Main Content */
+.container {
+    display: flex;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    max-width: 800px;
+    width: 90%;
+}
+
+/* Text Content */
+.content {
+    padding: 40px;
+    flex: 1;
+}
+
+.content h1 {
+    color: #003366; /* Dark Blue */
+    font-size: 2.5em;
+    margin: 0 0 10px;
+}
+
+.content p {
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+/* Button Styling */
+.button {
+    display: inline-block;
+    padding: 15px 30px;
+    font-size: 1em;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #003366; /* Dark Blue */
+    border-radius: 5px;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.button:hover {
+    background-color: #00509e; /* Slightly lighter blue on hover */
+}
+
+/* Image Styling */
+.image-container {
+    flex: 1;
+    background-color: #e6f2ff; /* Very Light Blue */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.image-container img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+}

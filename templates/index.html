@@ -1,0 +1,155 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <title>Welcome to Credit Check</title>
+    <style>
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5); 
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+        .modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 20px;
+            width: 400px;
+            max-width: 90%;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            animation: slideIn 0.4s ease; 
+        }
+        @keyframes slideIn {
+            from { transform: translateY(-50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 24px;
+            color: #333;
+            cursor: pointer;
+        }
+        .button, .modal button[type="button"] {
+            background-color: #1a73e8;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .button:hover, .modal button[type="button"]:hover {
+            background-color: #0c5bbf;
+        }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="content">
+            <h1>Welcome, {{ user }}</h1>
+            <p>Let’s check your credit score</p>
+            <button class="button" onclick="openModal()">Check Credit Score</button>
+        </div>
+        <div class="image-container">
+            <img src="{% static 'images/credit_card.jpg' %}" alt="Credit Score Illustration">
+        </div>
+    </div>
+
+    <div id="questionModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <h2 id="questionText">Question Text</h2>
+            <form id="questionForm">
+                {% csrf_token %}
+                <input type="hidden" name="question_id" id="question_id" value="">
+                <div class="options">
+                    <label><input type="radio" name="answer" value="1" id="radio1" required> <span id="answer1">Answer 1</span></label><br>
+                    <label><input type="radio" name="answer" value="2" id="radio2"> <span id="answer2">Answer 2</span></label><br>
+                    <label><input type="radio" name="answer" value="3" id="radio3"> <span id="answer3">Answer 3</span></label><br>
+                    <label><input type="radio" name="answer" value="4" id="radio4"> <span id="answer4">Answer 4</span></label>
+                </div>
+                <button type="button" onclick="nextQuestion()">Next</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        let currentQuestionIndex = 0;
+        const questions = {{ questions|safe }};
+        console.log(questions);
+        
+
+        function openModal() {
+            document.getElementById("questionModal").classList.add("active");
+            loadQuestion(currentQuestionIndex);
+        }
+
+        function closeModal() {
+            document.getElementById("questionModal").classList.remove("active");
+        }
+
+        function loadQuestion(index) {
+            const question = questions[index];
+            document.getElementById("question_id").value = question.id;
+            document.getElementById("questionText").innerText = question.question;
+            document.getElementById("answer1").innerText = question.answer1;
+            document.getElementById("answer2").innerText = question.answer2;
+            document.getElementById("answer3").innerText = question.answer3;
+            document.getElementById("answer4").innerText = question.answer4;
+            document.getElementById("radio1").value = question.score1;
+            document.getElementById("radio2").value = question.score2;
+            document.getElementById("radio3").value = question.score3;
+            document.getElementById("radio4").value = question.score4;
+        }
+
+        function nextQuestion() {
+            const question_id = $("#question_id").val();
+            const selectedAnswer = $("input[name='answer']:checked").val();
+            if (!selectedAnswer) {
+                alert("Please select an answer.");
+                return;
+            }
+            $.ajax({
+                url: "{% url 'submit_answers' %}",
+                type: "POST",
+                data: {
+                    question_id: question_id,
+                    selected_answer: selectedAnswer,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function(response) {
+                    currentQuestionIndex++;
+                    if (currentQuestionIndex < questions.length) {
+                        loadQuestion(currentQuestionIndex);
+                    } else {
+                        closeModal();
+                        window.location.href = "{% url 'score_page' %}";
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{% static 'css/score_page.css' %}">
+    <title>Credit Score</title>
+</head>
+<body>
+    <div class="score-container">
+        <h1>Your Credit Score</h1>
+        <p>{{ score_total }}</p>
+        <a href="{% url 'index' %}" class="button">Return Home</a>
+    </div>
+</body>
+</html>
